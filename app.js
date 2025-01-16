@@ -11,26 +11,22 @@ require('dotenv').config();
 
 const app = express();
 
+// CORS middleware
+app.use(cors({
+    origin: 'http://localhost:5173',  // Allow only your frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 // Connect to DB
 connectDB();
 
 // Middleware
 app.use(bodyParser.json());
-
-// Improved CORS configuration
-const corsOptions = {
-    origin: 'http://localhost:5173', // Allow front-end origin
-    methods: 'GET,POST,PUT,DELETE',
-    credentials: true,
-};
-app.use(cors(corsOptions));
-
 app.use('/uploads', express.static('uploads'));
 
-// Use auth routes
-app.use('/api', authRoutes);
-
 // Routes
+app.use('/api', authRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
