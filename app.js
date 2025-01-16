@@ -16,7 +16,15 @@ connectDB();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+
+// Improved CORS configuration
+const corsOptions = {
+    origin: 'http://localhost:5173', // Allow front-end origin
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true,
+};
+app.use(cors(corsOptions));
+
 app.use('/uploads', express.static('uploads'));
 
 // Use auth routes
