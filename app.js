@@ -13,7 +13,7 @@ const app = express();
 
 // CORS middleware
 app.use(cors({
-    origin: 'http://localhost:5173',  // Allow only your frontend domain
+    origin: 'https://interschoolmatara2005.netlify.app/',  // Allow only your frontend domain
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
