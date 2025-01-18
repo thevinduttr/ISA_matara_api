@@ -11,18 +11,22 @@ require('dotenv').config();
 
 const app = express();
 
+// CORS middleware
+app.use(cors({
+    origin: 'https://interschoolmatara2005.netlify.app/',  // Allow only your frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 // Connect to DB
 connectDB();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
 app.use('/uploads', express.static('uploads'));
 
-// Use auth routes
-app.use('/api', authRoutes);
-
 // Routes
+app.use('/api', authRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
