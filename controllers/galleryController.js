@@ -7,14 +7,13 @@ exports.addImage = async (req, res) => {
     try {
         const { title } = req.body;
 
-        if (!title) throw new Error('Gallery title is required.');
-
         let gallery = await Gallery.findOne({ title });
         if (!gallery) {
             gallery = new Gallery({ title, images: [] });
         }
 
-        req.files.forEach((image) => {
+        // Iterate over the uploaded files
+        req.files.forEach(image => {
             const imagePath = `/uploads/${title}/${image.filename}`;
             gallery.images.push({ url: imagePath, title });
         });
@@ -22,7 +21,6 @@ exports.addImage = async (req, res) => {
         await gallery.save();
         res.status(200).json({ message: 'Images added to gallery', gallery });
     } catch (error) {
-        console.error('Error in addImage:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
@@ -35,7 +33,6 @@ exports.getGalleryByTitle = async (req, res) => {
         if (!gallery) return res.status(404).json({ message: 'Gallery not found' });
         res.status(200).json(gallery);
     } catch (error) {
-        console.error('Error in getGalleryByTitle:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
@@ -48,17 +45,15 @@ exports.deleteImage = async (req, res) => {
 
         if (!gallery) return res.status(404).json({ message: 'Gallery not found' });
 
-        const imageIndex = gallery.images.findIndex((img) => img._id.toString() === imageId);
+        const imageIndex = gallery.images.findIndex(img => img._id.toString() === imageId);
         if (imageIndex === -1) return res.status(404).json({ message: 'Image not found' });
 
         const [removedImage] = gallery.images.splice(imageIndex, 1);
-        const imagePath = path.resolve(__dirname, '..', removedImage.url);
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        fs.unlinkSync(path.join(__dirname, '..', removedImage.url));
 
         await gallery.save();
         res.status(200).json({ message: 'Image deleted', gallery });
     } catch (error) {
-        console.error('Error in deleteImage:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
@@ -71,23 +66,23 @@ exports.deleteGallery = async (req, res) => {
 
         if (!gallery) return res.status(404).json({ message: 'Gallery not found' });
 
-        const galleryPath = path.resolve(__dirname, '..', 'uploads', title);
-        if (fs.existsSync(galleryPath)) fs.rmdirSync(galleryPath, { recursive: true });
+        // Remove gallery folder
+        const galleryPath = path.join(__dirname, '..', 'uploads', title);
+        fs.rmdirSync(galleryPath, { recursive: true });
 
         res.status(200).json({ message: 'Gallery deleted' });
     } catch (error) {
-        console.error('Error in deleteGallery:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
 
-// Get All Galleries
+
+// Get all galleries with their images
 exports.getAllGalleries = async (req, res) => {
     try {
-        const galleries = await Gallery.find();
+        const galleries = await Gallery.find(); // Fetch all gallery records from the database
         res.status(200).json(galleries);
     } catch (error) {
-        console.error('Error in getAllGalleries:', error.message);
         res.status(500).json({ message: error.message });
     }
 };
